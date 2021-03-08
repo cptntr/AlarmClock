@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="clock.png" />
+    <None Remove="Resources\add-rule.png" />
+    <None Remove="Resources\alarm_clock_time.png" />
+    <None Remove="Resources\clock.png" />
+    <None Remove="Resources\clock_alpha.png" />
+    <None Remove="Resources\clock_white.png" />
+    <None Remove="Resources\edit_time.png" />
+    <None Remove="Resources\night-shift.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ASquare.WindowsTaskScheduler" Version="1.6.0" />
+    <PackageReference Include="MahApps.Metro" Version="2.4.4" />
+    <PackageReference Include="Microsoft.Win32.TaskScheduler" Version="2.2.0.3" />
+    <PackageReference Include="TaskScheduler" Version="2.9.1" />
+    <PackageReference Include="TaskSchedulerEditor" Version="2.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\add-rule.png" />
+    <Resource Include="Resources\alarm_clock_time.png" />
+    <Resource Include="Resources\clock_alpha.png" />
+    <Resource Include="Resources\clock_white.png" />
+    <Resource Include="Resources\edit_time.png" />
+    <Resource Include="Resources\night-shift.png" />
+  </ItemGroup>
+
+</Project>

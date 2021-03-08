@@ -3,66 +3,168 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WPF_Calculator"
+        xmlns:local="clr-namespace:AlarmClockApp"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-        x:Class="WPF_Calculator.MainWindow"
+        xmlns:ResourcePacks="C:\Users\Taras\Documents\# Архів\# Проекти\# SoftServe Academy\WPF\Resources\"
+        xmlns:Models="clr-namespace:ASquare.WindowsTaskScheduler.Models;assembly=ASquare.WindowsTaskScheduler"
+    		xmlns:conv="clr-namespace:AlarmClockApp.MVVM.Converter"    
+    x:Class="AlarmClockApp.MainWindow"
         mc:Ignorable="d"
         Title="Alarm clock"
-        Height="650"
-        Width="800"
+        GlowBrush="{DynamicResource MahApps.Brushes.Button.AccentedSquare.Background.MouseOver}"
+        Icon="Resources/alarm_clock_time.png"
+        MinWidth="540"
+
+        SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-    >
-    <Grid>
-        <TabControl Margin="0,10,0,0">
-            <TabItem Header="Create &amp; Edit" x:Name="tabCreateEdit">
-                <Grid Background="#FFE5E5E5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <mah:TimePicker x:Name="selectTime" HorizontalAlignment="Left" Margin="199,12,0,0" VerticalAlignment="Top" Culture="uk-UA"/>
-                    <TabControl HorizontalAlignment="Left" Height="199" Margin="10,55,0,0" VerticalAlignment="Top" Width="532" UseLayoutRounding="False">
-                        <TabItem Header="One time" x:Name="tabOneTime">
-                            <Grid Background="#FFE5E5E5"/>
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MahApps.Brushes.Button.Square.Background.MouseOver}"
+        IsMinButtonEnabled="False"
+        IsMaxRestoreButtonEnabled="False"
+        ShowMinButton="False">
+
+    <Window.Resources>
+        <conv:AlarmPriorityToBoolConverter x:Key="AlarmPriorityToBoolConverter"/>
+        <conv:NotifyToBoolConverter x:Key="NotifyToBoolConverter"/>
+    </Window.Resources>
+
+    <mah:MetroWindow.LeftWindowCommands>
+        <mah:WindowCommands>
+            <Button>
+                <Image Margin="3" Source="C:\Users\Taras\Documents\# Архів\# Проекти\# SoftServe Academy\WPF\Resources\night-shift.png"/>
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.LeftWindowCommands>
+    
+
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button>
+                <Image Margin="3" Source="Resources/add-rule.png"/>
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+    
+    <mah:MetroAnimatedSingleRowTabControl Background="{x:Null}">
+        <TabItem Header="Create" x:Name="tabCreateEdit" mah:HeaderedControlHelper.HeaderFontSize="21" mah:ControlsHelper.ContentCharacterCasing="Upper">
+            <StackPanel>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Top" MinHeight="515">
+                    <Separator Margin="5" Visibility="Hidden"/>
+
+                    <StackPanel Orientation="Vertical">
+
+                        <StackPanel Orientation="Horizontal" IsEnabled="{Binding Path=OnLogOption, UpdateSourceTrigger=PropertyChanged}">
+                            <Separator Margin="5"/>
+                            <Label Content="Start" />
+                            <DatePicker SelectedDate="{Binding Path=StartDate}"  x:Name="dateStart" FirstDayOfWeek="Monday" mah:ControlsHelper.MouseOverBorderBrush="#00000000"/>
+                            <Separator Margin="5"/>
+                            <mah:TimePicker x:Name="timeStart" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                            <Separator Margin="5"/>
+                            <CheckBox IsChecked="{Binding Path=SyncTimeZones}" Content=" Synchronize across time zones" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding Path=Description}"  Margin="10" TextWrapping="Wrap" mah:TextBoxHelper.Watermark="Description"/>
+
+                    </StackPanel>
+                    <Separator Margin="5" Visibility="Hidden"/>
+
+                    <mah:MetroAnimatedSingleRowTabControl UseLayoutRounding="False">
+                        <TabItem Header="One time" x:Name="tabOneTime" Background="{x:Null}" Width="Auto" Height="Auto" mah:HeaderedControlHelper.HeaderFontSize="17">
+                            <StackPanel Orientation="Horizontal" Margin="10" >
+                                <CheckBox IsChecked="{Binding Path=ComputerStarts}" Content=" When the computer starts" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <Separator Visibility="Hidden"/>
+                                <CheckBox IsChecked="{Binding Path=LogOn}" Content=" When I log on" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                            </StackPanel>
                         </TabItem>
-                        <TabItem Header="Daily" x:Name="tabDaily">
-                            <Grid Background="#FFE5E5E5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Label Content="Recur every:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                <Label Content="Days" HorizontalAlignment="Left" Margin="178,10,0,0" VerticalAlignment="Top"/>
-                                <mah:NumericUpDown x:Name="recurDays" HorizontalAlignment="Left" Margin="89,10,0,0" VerticalAlignment="Top" Width="84" TrackMouseWheelWhenMouseOver="True" Minimum="1" Value="1" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
-                            </Grid>
+                        <TabItem Header="Daily" x:Name="tabDaily" Background="{x:Null}" Width="Auto" Height="Auto" mah:HeaderedControlHelper.HeaderFontSize="17">
+                            <StackPanel Margin="10">
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <Label Content="Recur every:"/>
+                                    <mah:NumericUpDown Value="{Binding Path=RecurDays}" TrackMouseWheelWhenMouseOver="True" Minimum="1" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
+                                    <Label Content="Days"/>
+                                </StackPanel>
+                            </StackPanel>
                         </TabItem>
-                        <TabItem Header="Weekly" x:Name="tabWeekly" HorizontalAlignment="Center" Height="39" VerticalAlignment="Center" Width="106">
-                            <Grid Background="#FFE5E5E5">
-                                <Label Content="Recur every:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                <Label Content="Weeks on:" HorizontalAlignment="Left" Margin="178,10,0,0" VerticalAlignment="Top"/>
-                                <mah:NumericUpDown x:Name="recurWeeks" HorizontalAlignment="Left" Margin="89,10,0,0" VerticalAlignment="Top" Width="84" TrackMouseWheelWhenMouseOver="True" Minimum="1" Value="1" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
-                                <CheckBox Content="Mon" x:Name="chMon" HorizontalAlignment="Left" Height="23" Margin="25,59,0,0" VerticalAlignment="Top" Width="59"/>
-                                <CheckBox Content="Tue" x:Name="chTue" HorizontalAlignment="Left" Height="23" Margin="84,59,0,0" VerticalAlignment="Top" Width="59"/>
-                                <CheckBox Content="Wed" x:Name="chWed" HorizontalAlignment="Left" Height="23" Margin="143,59,0,0" VerticalAlignment="Top" Width="59"/>
-                                <CheckBox Content="Thu" x:Name="chThu" HorizontalAlignment="Left" Height="23" Margin="204,59,0,0" VerticalAlignment="Top" Width="59"/>
-                                <CheckBox Content="Fri" x:Name="chFri" HorizontalAlignment="Left" Height="23" Margin="263,59,0,0" VerticalAlignment="Top" Width="59" Checked="CheckBox_Checked_1"/>
-                                <CheckBox Content="Sat" x:Name="chSat" HorizontalAlignment="Left" Height="23" Margin="25,87,0,0" VerticalAlignment="Top" Width="59"/>
-                                <CheckBox Content="Sun" x:Name="chSun" HorizontalAlignment="Left" Height="23" Margin="84,87,0,0" VerticalAlignment="Top" Width="59"/>
-                            </Grid>
+                        <TabItem Header="Weekly" x:Name="tabWeekly" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" mah:HeaderedControlHelper.HeaderFontSize="17">
+                            <StackPanel Margin="10">
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <Label Content="Recur every:"/>
+                                    <mah:NumericUpDown TrackMouseWheelWhenMouseOver="True" Minimum="1" Value="{Binding Path=RecurWeeks}" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
+                                    <Label Content="Weeks on:"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding Path=Mon}" Content="Mon" x:Name="chMon" Width="59" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                        <CheckBox IsChecked="{Binding Path=Tue}" Content="Tue" x:Name="chTue" Width="59" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                        <CheckBox IsChecked="{Binding Path=Wed}" Content="Wed" x:Name="chWed" Width="59" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                        <CheckBox IsChecked="{Binding Path=Thu}" Content="Thu" x:Name="chThu" Width="59" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                        <CheckBox IsChecked="{Binding Path=Fri}" Content="Fri" x:Name="chFri" Width="59" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                        <Separator Margin="10" Visibility="Hidden"/>
+                                        <Button Command="{Binding CmdToggleAllDays}" Style="{StaticResource MahApps.Styles.Button.Flat}">
+                                            <Image Margin="1" Source="C:\Users\Taras\Documents\# Архів\# Проекти\# SoftServe Academy\WPF\Resources\all.png"/>
+                                        </Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding Path=Sat}" Content="Sat" x:Name="chSat" Width="59" FontWeight="Bold" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                        <CheckBox IsChecked="{Binding Path=Sun}" Content="Sun" x:Name="chSun" Width="59" FontWeight="Bold" Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
                         </TabItem>
-                        <TabItem Header="Monthly" x:Name="tabMonthly" HorizontalAlignment="Center" Height="39" VerticalAlignment="Center" Width="201">
-                            <Grid Background="#FFE5E5E5"/>
-                        </TabItem>
-                    </TabControl>
-                    <Label Content="Start" HorizontalAlignment="Left" Height="30" Margin="18,10,0,0" VerticalAlignment="Top" Width="42"/>
-                    <CheckBox x:Name="synTimeZones" Content="Synchronize across time zones" HorizontalAlignment="Left" Height="30" Margin="347,10,0,0" VerticalAlignment="Top" Width="195" Checked="CheckBox_Checked"/>
-                    <mah:ToggleSwitch Header="Enabled" x:Name="chAlarmEnabled" Height="58" Margin="10,511,0,0" Width="145" VerticalAlignment="Top" IsOn="True"/>
-                    <DatePicker x:Name="selectDate" HorizontalAlignment="Left" Margin="65,12,0,0" VerticalAlignment="Top" Width="129"/>
-                    <Button Content="OK" x:Name="btnApproveAlarm" HorizontalAlignment="Left" Height="45" Margin="393,524,0,0" VerticalAlignment="Top" Width="146" IsDefault="True" Click="btnApproveAlarm_Click"/>
-                    <GroupBox Header="GroupBox" HorizontalAlignment="Left" Height="247" Margin="10,259,0,0" VerticalAlignment="Top" Width="529"/>
+                    </mah:MetroAnimatedSingleRowTabControl>
+
+                    <Expander Header="Advanced">
+                        <StackPanel Margin="10">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding Path=RandomDelay}" Content=" Delay alarn for up to (random delay):" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <mah:TimePicker IsEnabled="{Binding Path=RandomDelay}" x:Name="timeDelay" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="10">
+                                <CheckBox IsChecked="{Binding Path=RepeatAlarm}" Content=" Repeat alarm every:" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <mah:TimePicker IsEnabled="{Binding Path=RepeatAlarm}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                                <CheckBox Content=" For a duration of:" IsEnabled="{Binding Path=RepeatAlarm}" IsChecked="{Binding Path=RepeatAlarmDuration}" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <mah:TimePicker IsEnabled="{Binding Path=RepeatAlarmDuration}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                            </StackPanel>
+                            <CheckBox Content=" Stop all running alarms at end of repetition duration" IsChecked="{Binding Path=StopRepeat}" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                        </StackPanel>
+                    </Expander>
+                    <Expander Header="Notification">
+                        <StackPanel Orientation="Horizontal">
+                            <mah:ToggleSwitch IsOn="{Binding Path=Notify, Converter={StaticResource NotifyToBoolConverter}}" Header="Alarm notification" x:Name="chAlarmNotification" Margin="10" OnContent="Notification" OffContent="Popup window"/>
+                            <mah:ToggleSwitch IsOn="{Binding Path=Notify, Converter={StaticResource AlarmPriorityToBoolConverter}}" Header="High priority" x:Name="chAlarmNotification_Copy"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Header="Conditions">
+                        <StackPanel Margin="10">
+                            <CheckBox IsChecked="{Binding Path=RunAsap}" Content=" Run alarm as soon as possible if it was missed" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                            <StackPanel Orientation="Horizontal" Margin="10">
+                                <CheckBox IsChecked="{Binding Path=DeleteAfter}" Content=" If the alarm is not scheduled to run again, delete it after:" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <Separator Margin="5"/>
+                                <mah:NumericUpDown IsEnabled="{Binding Path=DeleteAfter}" TrackMouseWheelWhenMouseOver="True" Minimum="1" Value="{Binding Path=DeleteAfterDays}" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
+                                <Label Content="days"/>
+                            </StackPanel>
+                            <CheckBox IsChecked="{Binding Path=Wake}" Content=" Wake the computer to this alarm" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                        </StackPanel>
+                    </Expander>
+                    <mah:TimePicker/>
+
+                </StackPanel>
+                <Grid Margin="15" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                    <mah:ToggleSwitch Header="Alarm enabled" IsOn="{Binding Path=Enabled}"/>
+                    <Canvas Height="40" VerticalAlignment="Center" HorizontalAlignment="Right" Width="291">
+                        <Button Content="OK" x:Name="btnOk" IsDefault="True" Click="btnApproveAlarm_Click" Height="40" Canvas.Left="151" Width="140" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
+                        <Button Content="Cancel" x:Name="btnCancel" Height="40" Width="140" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
+                    </Canvas>
                 </Grid>
-            </TabItem>
-            <TabItem Header="List" x:Name="tabList">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-        </TabControl>
-    </Grid>
+            </StackPanel>
+
+
+        </TabItem>
+        <TabItem Header="List" x:Name="tabList" mah:HeaderedControlHelper.HeaderFontSize="21" mah:ControlsHelper.ContentCharacterCasing="Upper" Loaded="tabList_Loaded">
+            <StackPanel MaxWidth="550" Margin="10">
+                <DataGrid x:Name="dataGridAlarms" Background="{x:Null}"/>
+            </StackPanel>
+        </TabItem>
+    </mah:MetroAnimatedSingleRowTabControl>
+
 </mah:MetroWindow>
