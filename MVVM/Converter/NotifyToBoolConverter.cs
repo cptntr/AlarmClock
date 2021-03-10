@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows.Data;
+using AlarmClockApp.MVVM.Abstract;
 using AlarmClockApp.MVVM.Model;
 
 namespace AlarmClockApp.MVVM.Converter
 {
-    class NotifyToBoolConverter : IValueConverter
+    class NotifyToBoolConverter : ConverterBase<NotifyToBoolConverter>
 	{
-		public object Convert(object value, Type targetType, object parameter,
-			System.Globalization.CultureInfo culture)
+		public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			switch ((Alarm.NotifyType)value)
 			{
@@ -22,8 +23,7 @@ namespace AlarmClockApp.MVVM.Converter
 			return false;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter,
-			System.Globalization.CultureInfo culture)
+		public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			//throw new NotImplementedException();
 			if (value is bool)

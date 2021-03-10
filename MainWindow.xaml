@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:AlarmClockApp"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:ResourcePacks="C:\Users\Taras\Documents\# Архів\# Проекти\# SoftServe Academy\WPF\Resources\"
-        xmlns:Models="clr-namespace:ASquare.WindowsTaskScheduler.Models;assembly=ASquare.WindowsTaskScheduler"
     		xmlns:conv="clr-namespace:AlarmClockApp.MVVM.Converter"    
     x:Class="AlarmClockApp.MainWindow"
         mc:Ignorable="d"
@@ -22,11 +21,6 @@
         IsMinButtonEnabled="False"
         IsMaxRestoreButtonEnabled="False"
         ShowMinButton="False">
-
-    <Window.Resources>
-        <conv:AlarmPriorityToBoolConverter x:Key="AlarmPriorityToBoolConverter"/>
-        <conv:NotifyToBoolConverter x:Key="NotifyToBoolConverter"/>
-    </Window.Resources>
 
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
@@ -58,7 +52,7 @@
                             <Label Content="Start" />
                             <DatePicker SelectedDate="{Binding Path=StartDate}"  x:Name="dateStart" FirstDayOfWeek="Monday" mah:ControlsHelper.MouseOverBorderBrush="#00000000"/>
                             <Separator Margin="5"/>
-                            <mah:TimePicker x:Name="timeStart" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                            <mah:TimePicker SelectedDateTime="{Binding Path=StartTime}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
                             <Separator Margin="5"/>
                             <CheckBox IsChecked="{Binding Path=SyncTimeZones}" Content=" Synchronize across time zones" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
                         </StackPanel>
@@ -67,19 +61,19 @@
                     </StackPanel>
                     <Separator Margin="5" Visibility="Hidden"/>
 
-                    <mah:MetroAnimatedSingleRowTabControl UseLayoutRounding="False">
+                    <mah:MetroAnimatedSingleRowTabControl UseLayoutRounding="False" SelectedIndex="{Binding Path=Reiteration, Converter={conv:SelectedIndexToReiteration}}">
                         <TabItem Header="One time" x:Name="tabOneTime" Background="{x:Null}" Width="Auto" Height="Auto" mah:HeaderedControlHelper.HeaderFontSize="17">
                             <StackPanel Orientation="Horizontal" Margin="10" >
-                                <CheckBox IsChecked="{Binding Path=ComputerStarts}" Content=" When the computer starts" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <CheckBox IsEnabled="{Binding Path=ComputerStartsEnabled}" IsChecked="{Binding Path=ComputerStarts}" Content=" When the computer starts" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
                                 <Separator Visibility="Hidden"/>
-                                <CheckBox IsChecked="{Binding Path=LogOn}" Content=" When I log on" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <CheckBox IsEnabled="{Binding Path=LogOnEnabled}" IsChecked="{Binding Path=LogOn}" Content=" When I log on" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
                             </StackPanel>
                         </TabItem>
                         <TabItem Header="Daily" x:Name="tabDaily" Background="{x:Null}" Width="Auto" Height="Auto" mah:HeaderedControlHelper.HeaderFontSize="17">
                             <StackPanel Margin="10">
                                 <StackPanel Orientation="Horizontal" Margin="10">
                                     <Label Content="Recur every:"/>
-                                    <mah:NumericUpDown Value="{Binding Path=RecurDays}" TrackMouseWheelWhenMouseOver="True" Minimum="1" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
+                                    <mah:NumericUpDown Value="{Binding Path=RecurDays}" TrackMouseWheelWhenMouseOver="True" Minimum="1" Maximum="99" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
                                     <Label Content="Days"/>
                                 </StackPanel>
                             </StackPanel>
@@ -88,7 +82,7 @@
                             <StackPanel Margin="10">
                                 <StackPanel Orientation="Horizontal" Margin="10">
                                     <Label Content="Recur every:"/>
-                                    <mah:NumericUpDown TrackMouseWheelWhenMouseOver="True" Minimum="1" Value="{Binding Path=RecurWeeks}" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
+                                    <mah:NumericUpDown TrackMouseWheelWhenMouseOver="True" Minimum="1" Maximum="99" Value="{Binding Path=RecurWeeks}" TextAlignment="Center" NumericInputMode="Numbers" UpDownButtonsWidth="15" SwitchUpDownButtons="True"/>
                                     <Label Content="Weeks on:"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical" Margin="10">
@@ -115,22 +109,22 @@
                     <Expander Header="Advanced">
                         <StackPanel Margin="10">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsChecked="{Binding Path=RandomDelay}" Content=" Delay alarn for up to (random delay):" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
-                                <mah:TimePicker IsEnabled="{Binding Path=RandomDelay}" x:Name="timeDelay" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                                <CheckBox IsChecked="{Binding Path=RandomDelay}" Content="{Binding Path=DelayText}" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
+                                <mah:TimePicker IsEnabled="{Binding Path=RandomDelay}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All" SelectedDateTime="{Binding Path=RandomDelayTime, Converter={conv:TimeSpanToDateTime}}" InputScope="Time"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <CheckBox IsChecked="{Binding Path=RepeatAlarm}" Content=" Repeat alarm every:" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
-                                <mah:TimePicker IsEnabled="{Binding Path=RepeatAlarm}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                                <mah:TimePicker SelectedDateTime="{Binding Path=RepeatAlarmTime, Converter={conv:TimeSpanToDateTime}}" IsEnabled="{Binding Path=RepeatAlarm}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
                                 <CheckBox Content=" For a duration of:" IsEnabled="{Binding Path=RepeatAlarm}" IsChecked="{Binding Path=RepeatAlarmDuration}" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
-                                <mah:TimePicker IsEnabled="{Binding Path=RepeatAlarmDuration}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
+                                <mah:TimePicker SelectedDateTime="{Binding Path=RepeatAlarmDurationTime, Converter={conv:TimeSpanToDateTime}}" IsEnabled="{Binding Path=RepeatAlarmDuration}" Culture="uk-UA" PickerVisibility="All" HandVisibility="All"/>
                             </StackPanel>
                             <CheckBox Content=" Stop all running alarms at end of repetition duration" IsChecked="{Binding Path=StopRepeat}" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
                         </StackPanel>
                     </Expander>
                     <Expander Header="Notification">
                         <StackPanel Orientation="Horizontal">
-                            <mah:ToggleSwitch IsOn="{Binding Path=Notify, Converter={StaticResource NotifyToBoolConverter}}" Header="Alarm notification" x:Name="chAlarmNotification" Margin="10" OnContent="Notification" OffContent="Popup window"/>
-                            <mah:ToggleSwitch IsOn="{Binding Path=Notify, Converter={StaticResource AlarmPriorityToBoolConverter}}" Header="High priority" x:Name="chAlarmNotification_Copy"/>
+                            <mah:ToggleSwitch IsOn="{Binding Path=Notify, Converter={conv:NotifyToBoolConverter}}" Header="Alarm notification" x:Name="chAlarmNotification" Margin="10" OnContent="Notification" OffContent="Popup window"/>
+                            <mah:ToggleSwitch IsOn="{Binding Path=Priority, Converter={conv:AlarmPriorityToBoolConverter}}" Header="High priority" x:Name="chAlarmNotification_Copy"/>
                         </StackPanel>
                     </Expander>
 
@@ -146,13 +140,12 @@
                             <CheckBox IsChecked="{Binding Path=Wake}" Content=" Wake the computer to this alarm" Style="{DynamicResource MahApps.Styles.CheckBox.DataGrid.Win10}"/>
                         </StackPanel>
                     </Expander>
-                    <mah:TimePicker/>
 
                 </StackPanel>
                 <Grid Margin="15" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                     <mah:ToggleSwitch Header="Alarm enabled" IsOn="{Binding Path=Enabled}"/>
                     <Canvas Height="40" VerticalAlignment="Center" HorizontalAlignment="Right" Width="291">
-                        <Button Content="OK" x:Name="btnOk" IsDefault="True" Click="btnApproveAlarm_Click" Height="40" Canvas.Left="151" Width="140" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
+                        <Button Command="{Binding CmdTAddAlarm}" Content="OK" x:Name="btnOk" IsDefault="True" Height="40" Canvas.Left="151" Width="140" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
                         <Button Content="Cancel" x:Name="btnCancel" Height="40" Width="140" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
                     </Canvas>
                 </Grid>
@@ -160,10 +153,33 @@
 
 
         </TabItem>
-        <TabItem Header="List" x:Name="tabList" mah:HeaderedControlHelper.HeaderFontSize="21" mah:ControlsHelper.ContentCharacterCasing="Upper" Loaded="tabList_Loaded">
-            <StackPanel MaxWidth="550" Margin="10">
-                <DataGrid x:Name="dataGridAlarms" Background="{x:Null}"/>
-            </StackPanel>
+        <TabItem Header="List" x:Name="tabList" mah:HeaderedControlHelper.HeaderFontSize="21" mah:ControlsHelper.ContentCharacterCasing="Upper" Loaded="tabList_Loaded" MouseUp="tabList_MouseUp">
+            <ListBox  MaxHeight="650" MaxWidth="550" Margin="10" ItemsSource="{Binding Tasks}"
+                 SelectedItem="{Binding SelectedTask}" MouseDoubleClick="ListBox_MouseDoubleClick">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Description: " FontWeight="Bold"/>
+                                <TextBlock FontSize="12" Text="{Binding Path=Definition.RegistrationInfo.Description}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Last Run Time: " FontWeight="Bold"/>
+                                <TextBlock FontSize="12" Text="{Binding Path=LastRunTime}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Next Run Time: " FontWeight="Bold"/>
+                                <TextBlock FontSize="12" Text="{Binding Path=NextRunTime}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Enabled: " FontWeight="Bold"/>
+                                <TextBlock FontSize="12" Text="{Binding Path=Enabled}"/>
+                            </StackPanel>
+                            <Separator/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </TabItem>
     </mah:MetroAnimatedSingleRowTabControl>
 

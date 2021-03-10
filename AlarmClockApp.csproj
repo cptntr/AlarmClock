@@ -18,11 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ASquare.WindowsTaskScheduler" Version="1.6.0" />
     <PackageReference Include="MahApps.Metro" Version="2.4.4" />
     <PackageReference Include="Microsoft.Win32.TaskScheduler" Version="2.2.0.3" />
     <PackageReference Include="TaskScheduler" Version="2.9.1" />
     <PackageReference Include="TaskSchedulerEditor" Version="2.9.1" />
+    <PackageReference Include="ToastNotifications" Version="2.5.1" />
+    <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,11 +1,8 @@
 ﻿using System.Windows;
 using MahApps.Metro.Controls;
-using ASquare.WindowsTaskScheduler.Models;
-using Microsoft.Win32.TaskScheduler;
 using AlarmClockApp.MVVM.ViewModel;
-using AlarmClockApp.MVVM.Model;
-using AlarmClockApp.Shared;
-using ControlzEx.Theming;
+using System;
+using System.Linq;
 
 namespace AlarmClockApp
 {
@@ -14,40 +11,54 @@ namespace AlarmClockApp
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private ToastViewModel _notify = new ToastViewModel();
+        private AlarmViewModel _alarmVM = new AlarmViewModel();
         public MainWindow()
         {
-            this.DataContext = new AlarmViewModel();
+            this.DataContext = _alarmVM;
+            //_alarmVM.UpdTasks();
+
+            string[] args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+            Func<string, string> lookupArg =
+                option => args.Where(s => s.StartsWith(option)).Select(s => s.Substring(option.Length)).FirstOrDefault();
+
+            string unhideArg = lookupArg("/hidden=");
+            if (unhideArg == "yes")
+                this.Visibility = Visibility.Hidden;
+
+            string priorityArg = lookupArg("/priority=");
+            string descriptionArg = lookupArg("/description=");
+            if(priorityArg != "")
+                if(descriptionArg!="")
+                    switch (priorityArg)
+                    {
+                        case "high":
+                            _notify.ShowWarning(descriptionArg); break;
+                        case "normal":
+                            _notify.ShowInformation(descriptionArg); break;
+                    }
+
             InitializeComponent();
-
-            ThemeManager.Current.ChangeTheme(this, "Light.Blue");
+            Unloaded += OnUnload;
         }
-        private void btnApproveAlarm_Click(object sender, RoutedEventArgs e)
+        private void OnUnload(object sender, RoutedEventArgs e)
         {
-            /*            SchedulerResponse response;
-                        response = WindowTaskScheduler
-                            .Configure()
-                            .CreateTask("alarmclock_low", "C:\\Test.bat")
-                            .RunDaily()
-                            .RunEveryXMinutes(10)
-                            .RunDurationFor(new TimeSpan(18, 0, 0))
-                            .SetStartDate(new DateTime(2015, 8, 8))
-                            .SetStartTime(new TimeSpan(8, 0, 0))
-                            .Execute()
-                            ;*/
-
-            /*            TaskService ts = new TaskService();
-
-                        //ts.FindAllTasks();
-                        dataGridAlarms.ItemsSource = ts.AllTasks;*/
-            new Interpreter().PushTestAlarm();
-
+            _notify.OnUnloaded();
         }
 
         private void tabList_Loaded(object sender, RoutedEventArgs e)
         {
-/*            TaskService ts = new TaskService();
-            //ts.FindAllTasks();
-            dataGridAlarms.ItemsSource = ts.AllTasks;*/
+            _alarmVM.UpdTasks();
+        }
+
+        private void tabList_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            _alarmVM.UpdTasks();
+        }
+
+        private void ListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            _alarmVM.UpdEdit();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace AlarmClockApp.MVVM.Model
     {
         #region Members
         #region Main
+        private string _name;
         private DateTime _startDate;
         private DateTime _startTime;
         private bool _syncTimeZones;
@@ -22,8 +23,8 @@ namespace AlarmClockApp.MVVM.Model
         private bool _logOn;
         public enum ReiterationType { oneTime, daily, weekly, monthly };
         private ReiterationType _reiteration;
-        private int _recurDays;
-        private int _recurWeeks;
+        private short _recurDays;
+        private short _recurWeeks;
         private DaysOfTheWeek _daysOfTheWeek;
         #endregion
         #region Advanced
@@ -53,6 +54,7 @@ namespace AlarmClockApp.MVVM.Model
         #endregion
         #region Properties
         #region Main
+        public string Name { get => _name; set => OnPropertyChanged(ref _name, value); }
         public DateTime StartDate { get => _startDate; set => OnPropertyChanged(ref _startDate, value); }
         public DateTime StartTime { get => _startTime; set => OnPropertyChanged(ref _startTime, value); }
         public bool SyncTimeZones { get => _syncTimeZones; set => OnPropertyChanged(ref _syncTimeZones, value); }
@@ -62,8 +64,8 @@ namespace AlarmClockApp.MVVM.Model
         public bool ComputerStarts { get => _computerStarts; set => OnPropertyChanged(ref _computerStarts, value); }
         public bool LogOn { get => _logOn; set => OnPropertyChanged(ref _logOn, value); }
         public ReiterationType Reiteration { get => _reiteration; set => OnPropertyChanged(ref _reiteration, value); }
-        public int RecurDays { get => _recurDays; set => OnPropertyChanged(ref _recurDays, value); }
-        public int RecurWeeks { get => _recurWeeks; set => OnPropertyChanged(ref _recurWeeks, value); }
+        public short RecurDays { get => _recurDays; set => OnPropertyChanged(ref _recurDays, value); }
+        public short RecurWeeks { get => _recurWeeks; set => OnPropertyChanged(ref _recurWeeks, value); }
         public DaysOfTheWeek DaysOfTheWeek { get => _daysOfTheWeek; set => OnPropertyChanged(ref _daysOfTheWeek, value); }
         #endregion
         #region Advanced
